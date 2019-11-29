@@ -1,6 +1,6 @@
 {
     "name": "feixuemengying/shengqianfu",
-    "description": "省钱付composer组件",
+    "description": "省钱付",
     "type": "libraray",
     "require": {
         "php": "^7.0",
@@ -19,6 +19,6 @@
     ],
     "minimum-stability": "stable",
     "autoload": {
-        "psr-4": {"Feixuemengying\\Shengqianfu\\":"src/"}
+        "psr-4": {"ShengQianFu\\":"src/"}
     }
 }
