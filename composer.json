@@ -1,0 +1,24 @@
+{
+    "name": "feixuemengying/shengqianfu",
+    "description": "省钱付composer组件",
+    "type": "libraray",
+    "require": {
+        "php": "^7.0",
+        "monolog/monolog": "1.0.*"
+    },
+    "require-dev": {
+        "php": "^7.0",
+        "phpunit/phpunit": "~4.3"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "matengfei",
+            "email": "mtf@shengqianfu.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {"Feixuemengying\\Shengqianfu\\":"src/"}
+    }
+}
