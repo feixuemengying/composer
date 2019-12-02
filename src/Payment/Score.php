@@ -5,6 +5,7 @@
 
     /**
      * 积分支付
+     * @author mtf@shengqianfu.com
      */
     class Score implements PaymentInterface{
 
