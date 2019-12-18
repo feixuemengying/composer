@@ -1,6 +1,7 @@
 <?php
 
 namespace ShengQianFu\Secret;
+
 /**
  * openssl secret
  *
@@ -9,17 +10,33 @@ namespace ShengQianFu\Secret;
 class Secret
 {
     public static $instace;
-    private $pri_key;
-    private $pub_key;
-    private function __construct()
+    private $pri_key; //私钥文件
+    private $pub_key; //公钥文件
+    private $config = array(
+        "private_key_bits" => 1024,
+        "private_key_type" => OPENSSL_KEYTYPE_RSA,
+    ); //openssl配置
+    private function __construct($prefix,$cnf = '')
     {
+        $this->pri_key = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . $prefix . "_rsa_key.pem";  
+        $this->pub_key = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . $prefix . "_rsa_key_pub.pem";
+        if(!file_exists($cnf . DIRECTORY_SEPARATOR . "openssl.cnf") && !file_exists(__DIR__ . DIRECTORY_SEPARATOR . "openssl.cnf"))
+        {
+            throw new \Exception("openssl.cnf require", 1);
+        }
+        $this->config['config'] = file_exists($cnf . DIRECTORY_SEPARATOR . "openssl.cnf") ? $cnf . DIRECTORY_SEPARATOR . "openssl.cnf" : __DIR__ . DIRECTORY_SEPARATOR . "openssl.cnf";  
     }
-
-    public static function getInstace()
+    /**
+     * 获取单例
+     * 
+     * @param string $prefix 密钥文件前缀
+     * @param string $cnf openssl.cnf文件路径,默认__DIR__
+     */
+    public static function getInstace($prefix,$cnf = '')
     {
         if (self::$instace instanceof self)
             return self::$instace;
-        return self::$instace = new self();
+        return self::$instace = new self($prefix,$cnf = '');
     }
     /**
      * 生成密钥文件
@@ -27,28 +44,22 @@ class Secret
      * @param string $id 密钥文件名
      * @param string $cnf openssl.cnf文件路径
      */
-    function rsa($id,$cnf = '')
+    function rsa()
     {
-        
-        $config = array(
-            "digest_alg" => "shengqianfu",
-            "private_key_bits" => 2048,
-            "private_key_type" => OPENSSL_KEYTYPE_RSA,
-            'config' =>is_file($cnf.DIRECTORY_SEPARATOR . "openssl.cnf")?$cnf.DIRECTORY_SEPARATOR . "openssl.cnf":__DIR__ . DIRECTORY_SEPARATOR . "openssl.cnf"
-        );
+        if (file_exists($this->pri_key)||file_exists($this->pub_key)) {
+            throw new \Exception(".pem exits");
+        } else {
+            //创建密钥对
+            $res = openssl_pkey_new($this->config);
+            //获取私钥
+            openssl_pkey_export($res, $priKey, null, $this->config);
+            //生成公钥
+            $pubKey = openssl_pkey_get_details($res);
 
-        //创建密钥对
-        $res = openssl_pkey_new($config);
-        //生成私钥
-        openssl_pkey_export($res, $priKey, null, $config);
-        //生成公钥
-        $pubKey = openssl_pkey_get_details($res);
-        //服务器私钥文件名
-        $this->pri_key = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . $id."_rsa_key.pem";
-        $this->pub_key = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . $id."_rsa_key_pub.pem";
-        //写入服务器私钥
-        file_put_contents($this->pri_key, $priKey);
-        file_put_contents($this->pub_key, $pubKey['key']);
+            //写入服务器
+            file_put_contents($this->pri_key, $priKey);
+            file_put_contents($this->pub_key, $pubKey['key']);
+        }
     }
     /**
      * 加密数据
