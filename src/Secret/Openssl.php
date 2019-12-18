@@ -18,8 +18,9 @@ class Secret
     ); //openssl配置
     private function __construct($prefix,$cnf = '')
     {
-        $this->pri_key = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . $prefix . "_rsa_key.pem";  
-        $this->pub_key = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . $prefix . "_rsa_key_pub.pem";
+        mkdir(__DIR__ . DIRECTORY_SEPARATOR .'rsa');
+        $this->pri_key = __DIR__ . DIRECTORY_SEPARATOR .'rsa'. DIRECTORY_SEPARATOR . $prefix . "_rsa_key.pem";  
+        $this->pub_key = __DIR__ . DIRECTORY_SEPARATOR .'rsa'. DIRECTORY_SEPARATOR . $prefix . "_rsa_key_pub.pem";
         if(!file_exists($cnf . DIRECTORY_SEPARATOR . "openssl.cnf") && !file_exists(__DIR__ . DIRECTORY_SEPARATOR . "openssl.cnf"))
         {
             throw new \Exception("openssl.cnf require", 1);
