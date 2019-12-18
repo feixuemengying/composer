@@ -3,8 +3,8 @@
     "description": "省钱付",
     "type": "libraray",
     "require": {
-        "php": "^5.3",
-        "monolog/monolog": "^1.0"
+        "php": ">5.3",
+        "monolog/monolog": "^2.0"
     },
     "require-dev": {
         "php": "^7.0",
