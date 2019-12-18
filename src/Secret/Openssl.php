@@ -19,7 +19,7 @@ class Secret
     {
         if (self::$instace instanceof self)
             return self::$instace;
-        self::$instace = new self();
+        return self::$instace = new self();
     }
     /**
      * 生成密钥文件
