@@ -16,16 +16,19 @@ class Secret
         "private_key_bits" => 1024,
         "private_key_type" => OPENSSL_KEYTYPE_RSA,
     ); //openssl配置
+
     private function __construct($prefix,$cnf = '')
     {
-        mkdir(__DIR__ . DIRECTORY_SEPARATOR .'rsa');
-        $this->pri_key = __DIR__ . DIRECTORY_SEPARATOR .'rsa'. DIRECTORY_SEPARATOR . $prefix . "_rsa_key.pem";  
-        $this->pub_key = __DIR__ . DIRECTORY_SEPARATOR .'rsa'. DIRECTORY_SEPARATOR . $prefix . "_rsa_key_pub.pem";
         if(!file_exists($cnf . DIRECTORY_SEPARATOR . "openssl.cnf") && !file_exists(__DIR__ . DIRECTORY_SEPARATOR . "openssl.cnf"))
         {
             throw new \Exception("openssl.cnf require", 1);
         }
-        $this->config['config'] = file_exists($cnf . DIRECTORY_SEPARATOR . "openssl.cnf") ? $cnf . DIRECTORY_SEPARATOR . "openssl.cnf" : __DIR__ . DIRECTORY_SEPARATOR . "openssl.cnf";  
+        $this->config['config'] = file_exists($cnf . DIRECTORY_SEPARATOR . "openssl.cnf") ? $cnf . DIRECTORY_SEPARATOR . "openssl.cnf" : __DIR__ . DIRECTORY_SEPARATOR . "openssl.cnf";
+        if(!is_dir(__DIR__ . DIRECTORY_SEPARATOR .'rsa')){
+            mkdir(__DIR__ . DIRECTORY_SEPARATOR .'rsa',0777,true);
+        }
+        $this->pri_key = __DIR__ . DIRECTORY_SEPARATOR .'rsa'. DIRECTORY_SEPARATOR . $prefix . "_rsa_key.pem";  
+        $this->pub_key = __DIR__ . DIRECTORY_SEPARATOR .'rsa'. DIRECTORY_SEPARATOR . $prefix . "_rsa_key_pub.pem";
     }
     /**
      * 获取单例
@@ -76,12 +79,12 @@ class Secret
     /**
      * 解密数据
      * 
-     * @param string $data 要解密的base64_encode数据
+     * @param string $base64_encode_data 要解密的base64_encode数据
      * @return string 解密后的数据
      */
-    function decrypt($data)
+    function decrypt($base64_encode_data)
     {
-        openssl_private_decrypt(base64_decode($data), $decrypttext, openssl_pkey_get_private(file_get_contents($this->pri_key)));
+        openssl_private_decrypt(base64_decode($base64_encode_data), $decrypttext, openssl_pkey_get_private(file_get_contents($this->pri_key)));
         return $decrypttext;
     }
 }
