@@ -17,30 +17,38 @@ class Secret
         "private_key_type" => OPENSSL_KEYTYPE_RSA,
     ); //openssl配置
 
-    private function __construct($prefix,$cnf = '')
+    private function __construct($prefix,$rsa= '' ,$cnf = '')
     {
         if(!file_exists($cnf . DIRECTORY_SEPARATOR . "openssl.cnf") && !file_exists(__DIR__ . DIRECTORY_SEPARATOR . "openssl.cnf"))
         {
             throw new \Exception("openssl.cnf require", 1);
         }
         $this->config['config'] = file_exists($cnf . DIRECTORY_SEPARATOR . "openssl.cnf") ? $cnf . DIRECTORY_SEPARATOR . "openssl.cnf" : __DIR__ . DIRECTORY_SEPARATOR . "openssl.cnf";
-        if(!is_dir(__DIR__ . DIRECTORY_SEPARATOR .'rsa')){
-            mkdir(__DIR__ . DIRECTORY_SEPARATOR .'rsa',0777,true);
+        
+        $path = $rsa . DIRECTORY_SEPARATOR .'rsa';
+        if(!$rsa)
+        {
+           $path =  $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR .'rsa';
         }
-        $this->pri_key = __DIR__ . DIRECTORY_SEPARATOR .'rsa'. DIRECTORY_SEPARATOR . $prefix . "_rsa_key.pem";  
-        $this->pub_key = __DIR__ . DIRECTORY_SEPARATOR .'rsa'. DIRECTORY_SEPARATOR . $prefix . "_rsa_key_pub.pem";
+        
+        if(!is_dir($path)){
+            mkdir($path,0777,true);
+        }
+        $this->pri_key = $path . DIRECTORY_SEPARATOR . $prefix . "_rsa_key.pem";  
+        $this->pub_key = $path . DIRECTORY_SEPARATOR . $prefix . "_rsa_key_pub.pem";
     }
     /**
      * 获取单例
      * 
-     * @param string $prefix 密钥文件前缀
-     * @param string $cnf openssl.cnf文件路径,默认__DIR__
+     * @param string $prefix    密钥文件前缀
+     * @param string $rsa       密钥文件路径
+     * @param string $cnf       openssl.cnf文件路径,默认__DIR__
      */
-    public static function getInstace($prefix,$cnf = '')
+    public static function getInstace($prefix,$rsa= '',$cnf = '')
     {
         if (self::$instace instanceof self)
             return self::$instace;
-        return self::$instace = new self($prefix,$cnf = '');
+        return self::$instace = new self($prefix,$rsa,$cnf);
     }
     /**
      * 生成密钥文件
