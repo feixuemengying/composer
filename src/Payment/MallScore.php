@@ -1,7 +1,7 @@
 <?php
     namespace ShengQianFu\Payment;
 
-    use ShengQianFu\PaymentInterface;
+    use ShengQianFu\Payment\PaymentInterface;
 
     /**
      * 商城积分支付
